@@ -15,11 +15,15 @@
  */
 package org.springframework.samples.petclinic.vet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
+
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
 
 /**
  * @author Juergen Hoeller
@@ -29,6 +33,7 @@ import java.util.Map;
  */
 @Controller
 class VetController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final VetRepository vets;
 
@@ -43,6 +48,9 @@ class VetController {
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
         model.put("vets", vets);
+        logger.info("Showing vets",
+            keyValue("action", "showVets"),
+            keyValue("result", "success"));
         return "vets/vetList";
     }
 
@@ -52,6 +60,9 @@ class VetController {
         // objects so it is simpler for JSon/Object mapping
         Vets vets = new Vets();
         vets.getVetList().addAll(this.vets.findAll());
+        logger.info("Showing vets",
+            keyValue("action", "showVets"),
+            keyValue("result", "success"));
         return vets;
     }
 

@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
@@ -25,6 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Collection;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+import static net.logstash.logback.argument.StructuredArguments.value;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
@@ -33,6 +38,7 @@ import java.util.Collection;
 @Controller
 @RequestMapping("/owners/{ownerId}")
 class PetController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String VIEWS_PETS_CREATE_OR_UPDATE_FORM = "pets/createOrUpdatePetForm";
     private final PetRepository pets;
@@ -79,9 +85,18 @@ class PetController {
         owner.addPet(pet);
         if (result.hasErrors()) {
             model.put("pet", pet);
+            logger.info("Failed to create pet",
+                keyValue("action", "createPet"),
+                keyValue("result", "validation_error"));
             return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
         } else {
             this.pets.save(pet);
+            logger.info("Creating pet {} with name {} of type {}",
+                value("petId", pet.getId()),
+                value("petName", pet.getName()),
+                value("petType", pet.getType().getName()),
+                keyValue("action", "createPet"),
+                keyValue("result", "success"));
             return "redirect:/owners/{ownerId}";
         }
     }
@@ -98,10 +113,19 @@ class PetController {
         if (result.hasErrors()) {
             pet.setOwner(owner);
             model.put("pet", pet);
+            logger.info("Failed to update pet",
+                keyValue("action", "updatePet"),
+                keyValue("result", "validation_error"));
             return VIEWS_PETS_CREATE_OR_UPDATE_FORM;
         } else {
             owner.addPet(pet);
             this.pets.save(pet);
+            logger.info("Updating pet {} with name {} of type {}",
+                value("petId", pet.getId()),
+                value("petName", pet.getName()),
+                value("petType", pet.getType().getName()),
+                keyValue("action", "updatePet"),
+                keyValue("result", "success"));
             return "redirect:/owners/{ownerId}";
         }
     }

@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,6 +31,9 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Map;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+import static net.logstash.logback.argument.StructuredArguments.value;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
@@ -37,6 +42,7 @@ import java.util.Map;
  */
 @Controller
 class OwnerController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String VIEWS_OWNER_CREATE_OR_UPDATE_FORM = "owners/createOrUpdateOwnerForm";
     private final OwnerRepository owners;
@@ -61,9 +67,17 @@ class OwnerController {
     @PostMapping("/owners/new")
     public String processCreationForm(@Valid Owner owner, BindingResult result) {
         if (result.hasErrors()) {
+            logger.info("Failed to create owner",
+                keyValue("action", "createOwner"),
+                keyValue("result", "validation_error"));
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
             this.owners.save(owner);
+            logger.info("Creating new owner {} with name {}",
+                value("ownerId", owner.getId()),
+                value("ownerName", owner.getName()),
+                keyValue("action", "createOwner"),
+                keyValue("result", "success"));
             return "redirect:/owners/" + owner.getId();
         }
     }
@@ -95,6 +109,9 @@ class OwnerController {
         } else {
             // multiple owners found
             model.put("selections", results);
+            logger.info("Showing owners",
+                keyValue("action", "showOwners"),
+                keyValue("result", "success"));
             return "owners/ownersList";
         }
     }
@@ -109,10 +126,18 @@ class OwnerController {
     @PostMapping("/owners/{ownerId}/edit")
     public String processUpdateOwnerForm(@Valid Owner owner, BindingResult result, @PathVariable("ownerId") int ownerId) {
         if (result.hasErrors()) {
+            logger.info("Failed to update owner",
+                keyValue("action", "updateOwner"),
+                keyValue("result", "validation_error"));
             return VIEWS_OWNER_CREATE_OR_UPDATE_FORM;
         } else {
             owner.setId(ownerId);
             this.owners.save(owner);
+            logger.info("Updating owner {} with name {}",
+                value("ownerId", owner.getId()),
+                value("ownerName", owner.getName()),
+                keyValue("action", "updateOwner"),
+                keyValue("result", "success"));
             return "redirect:/owners/{ownerId}";
         }
     }
@@ -126,7 +151,13 @@ class OwnerController {
     @GetMapping("/owners/{ownerId}")
     public ModelAndView showOwner(@PathVariable("ownerId") int ownerId) {
         ModelAndView mav = new ModelAndView("owners/ownerDetails");
-        mav.addObject(this.owners.findById(ownerId));
+        final Owner owner = this.owners.findById(ownerId);
+        mav.addObject(owner);
+        logger.info("Showing owner {} with name {}",
+            value("ownerId", owner.getId()),
+            value("ownerName", owner.getName()),
+            keyValue("action", "showOwner"),
+            keyValue("result", "success"));
         return mav;
     }
 

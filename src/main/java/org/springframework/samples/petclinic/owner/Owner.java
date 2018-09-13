@@ -85,6 +85,10 @@ public class Owner extends Person {
         this.telephone = telephone;
     }
 
+    public String getName() {
+        return getFirstName() + " " + getLastName();
+    }
+
     protected Set<Pet> getPetsInternal() {
         if (this.pets == null) {
             this.pets = new HashSet<>();

@@ -15,6 +15,8 @@
  */
 package org.springframework.samples.petclinic.owner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.samples.petclinic.visit.Visit;
 import org.springframework.samples.petclinic.visit.VisitRepository;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Map;
 
+import static net.logstash.logback.argument.StructuredArguments.keyValue;
+import static net.logstash.logback.argument.StructuredArguments.value;
+
 /**
  * @author Juergen Hoeller
  * @author Ken Krebs
@@ -34,6 +39,7 @@ import java.util.Map;
  */
 @Controller
 class VisitController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final VisitRepository visits;
     private final PetRepository pets;
@@ -78,8 +84,19 @@ class VisitController {
     @PostMapping("/owners/{ownerId}/pets/{petId}/visits/new")
     public String processNewVisitForm(@Valid Visit visit, BindingResult result) {
         if (result.hasErrors()) {
+            logger.info("Failed to create visit",
+                keyValue("action", "createVisit"),
+                keyValue("result", "validation_error"));
             return "pets/createOrUpdateVisitForm";
         } else {
+            final Integer petId = visit.getPetId();
+            final Pet pet = this.pets.findById(petId);
+            logger.info("Creating new visit for pet id {} with name {}",
+                value("petId", petId),
+                value("petName", pet.getName()),
+                value("petType", pet.getType() == null ? "" : pet.getType().getName()),
+                keyValue("action", "createVisit"),
+                keyValue("result", "success"));
             this.visits.save(visit);
             return "redirect:/owners/{ownerId}";
         }
