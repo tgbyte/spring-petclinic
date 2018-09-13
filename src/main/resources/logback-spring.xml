@@ -3,26 +3,31 @@
 
     <springProperty scope="context" name="appName" source="spring.application.name"/>
 
-    <springProfile name="default">
-        <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-            </encoder>
-        </appender>
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+
+    <springProfile name="!json-logging">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     </springProfile>
 
-    <springProfile name="!default">
-        <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+    <springProfile name="json-logging">
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
     </springProfile>
 
     <logger name="logger" additivity="false" level="DEBUG">
-        <appender-ref ref="consoleAppender"/>
+        <appender-ref ref="CONSOLE"/>
+        <springProfile name="file">
+            <appender-ref ref="FILE" />
+        </springProfile>
     </logger>
 
     <root level="info">
-        <appender-ref ref="consoleAppender" />
+        <appender-ref ref="CONSOLE" />
+        <springProfile name="file">
+            <appender-ref ref="FILE" />
+        </springProfile>
     </root>
 
 </configuration>
