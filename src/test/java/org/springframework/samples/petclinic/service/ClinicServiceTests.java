@@ -87,7 +87,7 @@ public class ClinicServiceTests {
 
     @Test
     public void shouldFindSingleOwnerWithPet() {
-        Owner owner = this.owners.findById(1);
+        Owner owner = this.owners.findById(1L);
         assertThat(owner.getLastName()).startsWith("Franklin");
         assertThat(owner.getPets().size()).isEqualTo(1);
         assertThat(owner.getPets().get(0).getType()).isNotNull();
@@ -116,7 +116,7 @@ public class ClinicServiceTests {
     @Test
     @Transactional
     public void shouldUpdateOwner() {
-        Owner owner = this.owners.findById(1);
+        Owner owner = this.owners.findById(1L);
         String oldLastName = owner.getLastName();
         String newLastName = oldLastName + "X";
 
@@ -124,13 +124,13 @@ public class ClinicServiceTests {
         this.owners.save(owner);
 
         // retrieving new name from database
-        owner = this.owners.findById(1);
+        owner = this.owners.findById(1L);
         assertThat(owner.getLastName()).isEqualTo(newLastName);
     }
 
     @Test
     public void shouldFindPetWithCorrectId() {
-        Pet pet7 = this.pets.findById(7);
+        Pet pet7 = this.pets.findById(7L);
         assertThat(pet7.getName()).startsWith("Samantha");
         assertThat(pet7.getOwner().getFirstName()).isEqualTo("Jean");
 
@@ -149,7 +149,7 @@ public class ClinicServiceTests {
     @Test
     @Transactional
     public void shouldInsertPetIntoDatabaseAndGenerateId() {
-        Owner owner6 = this.owners.findById(6);
+        Owner owner6 = this.owners.findById(6L);
         int found = owner6.getPets().size();
 
         Pet pet = new Pet();
@@ -163,7 +163,7 @@ public class ClinicServiceTests {
         this.pets.save(pet);
         this.owners.save(owner6);
 
-        owner6 = this.owners.findById(6);
+        owner6 = this.owners.findById(6L);
         assertThat(owner6.getPets().size()).isEqualTo(found + 1);
         // checks that id has been generated
         assertThat(pet.getId()).isNotNull();
@@ -172,14 +172,14 @@ public class ClinicServiceTests {
     @Test
     @Transactional
     public void shouldUpdatePetName() throws Exception {
-        Pet pet7 = this.pets.findById(7);
+        Pet pet7 = this.pets.findById(7L);
         String oldName = pet7.getName();
 
         String newName = oldName + "X";
         pet7.setName(newName);
         this.pets.save(pet7);
 
-        pet7 = this.pets.findById(7);
+        pet7 = this.pets.findById(7L);
         assertThat(pet7.getName()).isEqualTo(newName);
     }
 
@@ -197,7 +197,7 @@ public class ClinicServiceTests {
     @Test
     @Transactional
     public void shouldAddNewVisitForPet() {
-        Pet pet7 = this.pets.findById(7);
+        Pet pet7 = this.pets.findById(7L);
         int found = pet7.getVisits().size();
         Visit visit = new Visit();
         pet7.addVisit(visit);
@@ -205,7 +205,7 @@ public class ClinicServiceTests {
         this.visits.save(visit);
         this.pets.save(pet7);
 
-        pet7 = this.pets.findById(7);
+        pet7 = this.pets.findById(7L);
         assertThat(pet7.getVisits().size()).isEqualTo(found + 1);
         assertThat(visit.getId()).isNotNull();
     }

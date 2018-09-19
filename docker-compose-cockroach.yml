@@ -1,0 +1,6 @@
+cockroach:
+  image: cockroachdb/cockroach-unstable
+  command: start --insecure
+  ports:
+    - "5432:26257"
+    - "8081:8080"

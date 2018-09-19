@@ -15,15 +15,14 @@
  */
 package org.springframework.samples.petclinic.visit;
 
-import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.samples.petclinic.model.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.samples.petclinic.model.BaseEntity;
+import java.time.LocalDate;
 
 /**
  * Simple JavaBean domain object representing a visit.
@@ -44,7 +43,7 @@ public class Visit extends BaseEntity {
     private String description;
 
     @Column(name = "pet_id")
-    private Integer petId;
+    private Long petId;
 
     /**
      * Creates a new instance of Visit for the current date
@@ -69,11 +68,11 @@ public class Visit extends BaseEntity {
         this.description = description;
     }
 
-    public Integer getPetId() {
+    public Long getPetId() {
         return this.petId;
     }
 
-    public void setPetId(Integer petId) {
+    public void setPetId(Long petId) {
         this.petId = petId;
     }
 

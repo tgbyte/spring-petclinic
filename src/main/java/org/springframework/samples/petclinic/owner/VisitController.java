@@ -66,7 +66,7 @@ class VisitController {
      * @return Pet
      */
     @ModelAttribute("visit")
-    public Visit loadPetWithVisit(@PathVariable("petId") int petId, Map<String, Object> model) {
+    public Visit loadPetWithVisit(@PathVariable("petId") long petId, Map<String, Object> model) {
         Pet pet = this.pets.findById(petId);
         model.put("pet", pet);
         Visit visit = new Visit();
@@ -89,7 +89,7 @@ class VisitController {
                 keyValue("result", "validation_error"));
             return "pets/createOrUpdateVisitForm";
         } else {
-            final Integer petId = visit.getPetId();
+            final Long petId = visit.getPetId();
             final Pet pet = this.pets.findById(petId);
             logger.info("Creating new visit for pet id {} with name {}",
                 value("petId", petId),

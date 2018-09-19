@@ -15,11 +15,11 @@
  */
 package org.springframework.samples.petclinic.owner;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Repository class for <code>Pet</code> domain objects All method names are compliant with Spring Data naming
@@ -46,7 +46,7 @@ public interface PetRepository extends Repository<Pet, Integer> {
      * @return the {@link Pet} if found
      */
     @Transactional(readOnly = true)
-    Pet findById(Integer id);
+    Pet findById(Long id);
 
     /**
      * Save a {@link Pet} to the data store, either inserting or updating it.
